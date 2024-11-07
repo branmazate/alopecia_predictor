@@ -45,10 +45,14 @@ def parse_details(data):
                 'publication date': pubdate
             })
     return records
-#Storing the data
-connection = sqlite3.connect('/data/raw/pubmed_data.db')
+
 #Ejecution
 ids = search_pubmed(search_term, retmax=1000)
 details = get_details(ids)
 regs = parse_details(details)
 df = pd.DataFrame(regs)
+
+#Storing the data
+connection = sqlite3.connect('/data/raw/pubmed_data.db')
+df.to_sql('pubmed_data', connection, if_exists='replace', index=False)
+connection.close()
