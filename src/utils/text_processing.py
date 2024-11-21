@@ -1,8 +1,11 @@
 import re
 import nltk
 import spacy
+import matplotlib.pyplot as plt
 from nltk.corpus import stopwords
 from transformers import AutoTokenizer, AutoModel
+from collections import Counter
+from wordcloud import WordCloud
 
 #Download the stopwords
 nltk.download('stopwords')
@@ -40,7 +43,16 @@ def get_bert_embeddings(text):
     model = AutoModel.from_pretrained('bert-base-uncased')
 
     # Tokenize the text
-    inputs = tokenizer(text, return_tensors='pt', truncattion=True, padding=True, max_length=128)
+    inputs = tokenizer(text, return_tensors='pt', truncation=True, padding=True, max_length=128)
     outputs = model(**inputs)
     embeddings = outputs.last_hidden_state[:, 0, :].detach().numpy()
     return embeddings.flatten()
+
+#Function to generate wordclouds in clusters
+def plot_wordcloud(text, cluster_id):
+    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(' '.join(text))
+    plt.figure(figsize=(10, 5))
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis('off')
+    plt.title(f'Word Cloud for Cluster {cluster_id}')
+    plt.show()
